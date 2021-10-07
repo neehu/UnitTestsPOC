@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TestNinja.Mocking;
 
-namespace TestNinja.UnitTests.Mocking
+namespace TestNinja.UnitTests.Mock
 {
     class FakeFileReader : IFileReader
     {

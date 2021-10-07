@@ -10,9 +10,12 @@ namespace TestNinja.Mocking
     public class VideoService
     {
         private IFileReader _fileReader { get; set; }
-        public VideoService(IFileReader reader = null)
+        private IVideoContext _videoContext { get; set; }
+
+        public VideoService(IFileReader reader = null, IVideoContext context = null)
         {
             _fileReader = reader ?? new FileReader();
+            _videoContext = context ?? new VideoRepos();
         }
         public string ReadVideoTitle()
         {
@@ -26,19 +29,11 @@ namespace TestNinja.Mocking
         public string GetUnprocessedVideosAsCsv()
         {
             var videoIds = new List<int>();
-            
-            using (var context = new VideoContext())
-            {
-                var videos = 
-                    (from video in context.Videos
-                    where !video.IsProcessed
-                    select video).ToList();
-                
-                foreach (var v in videos)
-                    videoIds.Add(v.Id);
+            var videos = _videoContext.getUnProcessedVideos();
+            foreach (var v in videos)
+                videoIds.Add(v.Id);
 
-                return String.Join(",", videoIds);
-            }
+            return String.Join(",", videoIds);
         }
     }
 
@@ -52,5 +47,10 @@ namespace TestNinja.Mocking
     public class VideoContext : DbContext
     {
         public DbSet<Video> Videos { get; set; }
+    }
+
+    public interface IVideoContext
+    {
+        IEnumerable<Video> getUnProcessedVideos();
     }
 }
